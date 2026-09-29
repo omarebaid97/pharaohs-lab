@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+.DS_Store
+.env
+
+# data: ignore everything except hand-curated, source-cited CSVs in data/manual/
+data/*
+!data/manual/
+data/private/
+data/cache/
+data/export/
+data/statsbomb/
+*.db
+*.db-wal
+*.db-shm
+*.db*
