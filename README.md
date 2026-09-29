@@ -93,3 +93,11 @@ data/            pharaohs.db, cache/, statsbomb/ (all gitignored), validation_re
 - Shot maps/xG exist only for recent FotMob matches and for StatsBomb AFCON 2023; the Egyptian league has none.
 - `opponent_elo` is the opponent's rating before the match (post-match rating minus the change reported by eloratings.net).
 - `eligibility_evidence` is schema only (populated in Phase 2).
+
+## Set-piece routine tagging (module E)
+
+`data/manual/set_piece_routines.csv` is a hand-filled log of set-piece routines seen on video or in match reports; `python -m etl.models.set_pieces` merges any rows into `data/export/set_pieces.json` (`manual_routines`) and counts them in the summary. It is never blended into the automated counts.
+
+- One row per set piece. Columns: `match_date` (YYYY-MM-DD, as in `matches.date`), `opponent`, `minute`, `situation` (corner / free_kick_direct / free_kick_indirect / throw_in / penalty), `routine_description` (short free text: delivery type, target zone, blocker/screen, short-corner pattern, who takes and who attacks the ball), `outcome` (goal / shot / cleared / won_foul / other), `video_or_source_url` (public link with timestamp, e.g. YouTube `?t=` or a match-report URL).
+- Keep the header row unchanged; quote fields containing commas. Cite only public sources; do not paste or upload footage.
+- Re-run the module after editing. Rows are merged verbatim (whitespace trimmed).
