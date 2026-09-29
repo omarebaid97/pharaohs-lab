@@ -1,0 +1,30 @@
+club,city,country,lat,lon,tz,source_url,fotmob_id
+Al Ahly SC,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,101745
+Zamalek SC,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,80591
+Pyramids FC,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,517894
+Ceramica Cleopatra,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,608449
+National Bank,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,687954
+ZED FC,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,585662
+Modern Sport FC,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,797212
+Al Sharkeyah-ENPPI,Cairo,Egypt,30.0444,31.2358,Africa/Cairo,https://www.wikidata.org/wiki/Q85,101754
+Al Masry SC,Port Said,Egypt,31.2625,32.3061,Africa/Cairo,https://www.wikidata.org/wiki/Q134509,101762
+El Gouna FC,El Gouna,Egypt,27.385,33.6792,Africa/Cairo,https://www.wikidata.org/wiki/Q286510,178268
+Ghazl Al Mahalla,El Mahalla El Kubra,Egypt,30.9667,31.1667,Africa/Cairo,https://www.wikidata.org/wiki/Q312723,101752
+Petrojet-Suez,Suez,Egypt,29.9833,32.55,Africa/Cairo,https://www.wikidata.org/wiki/Q31070,103017
+Al Najma,Unaizah,Saudi Arabia,26.084,43.994,Asia/Riyadh,https://www.wikidata.org/wiki/Q27138,1523707
+Al-Ain,Al Ain,United Arab Emirates,24.2075,55.7447,Asia/Dubai,https://www.wikidata.org/wiki/Q234600,102117
+Al-Jazira,Abu Dhabi,United Arab Emirates,24.4511,54.3969,Asia/Dubai,https://www.wikidata.org/wiki/Q1519,102101
+Al-Shamal,Madinat ash Shamal,Qatar,26.14,51.22,Asia/Qatar,https://www.wikidata.org/wiki/Q310872,101904
+Al-Wakrah,Al Wakrah,Qatar,25.18,51.61,Asia/Qatar,https://www.wikidata.org/wiki/Q22811096,101901
+Barcelona,Barcelona,Spain,41.3825,2.1769,Europe/Madrid,https://www.wikidata.org/wiki/Q1492,8634
+Real Oviedo,Oviedo,Spain,43.3625,-5.8503,Europe/Madrid,https://www.wikidata.org/wiki/Q14317,8670
+Celtic,Glasgow,Scotland,55.8611,-4.25,Europe/London,https://www.wikidata.org/wiki/Q4093,9925
+Liverpool,Liverpool,England,53.4072,-2.9917,Europe/London,https://www.wikidata.org/wiki/Q24826,8650
+Manchester City,Manchester,England,53.4794,-2.2453,Europe/London,https://www.wikidata.org/wiki/Q18125,8456
+Tottenham Hotspur,London,England,51.5072,-0.1275,Europe/London,https://www.wikidata.org/wiki/Q84,8586
+Frosinone,Frosinone,Italy,41.6333,13.35,Europe/Rome,https://www.wikidata.org/wiki/Q13413,9891
+Ludogorets Razgrad,Razgrad,Bulgaria,43.5409,26.5288,Europe/Sofia,https://www.wikidata.org/wiki/Q189650,210173
+Nantes,Nantes,France,47.2172,-1.5539,Europe/Paris,https://www.wikidata.org/wiki/Q12191,9830
+Nice,Nice,France,43.7019,7.2683,Europe/Paris,https://www.wikidata.org/wiki/Q33959,9831
+Nordsjaelland,Farum,Denmark,55.8083,12.3581,Europe/Copenhagen,https://www.wikidata.org/wiki/Q3554742,10202
+Trabzonspor,Trabzon,Turkey,41.005,39.7225,Europe/Istanbul,https://www.wikidata.org/wiki/Q45301,9752
