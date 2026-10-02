@@ -14,3 +14,6 @@ data/statsbomb/
 *.db-wal
 *.db-shm
 *.db*
+
+site/node_modules/
+site/dist/

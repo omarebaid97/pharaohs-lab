@@ -17,6 +17,7 @@ import math
 import re
 import sqlite3
 from collections import Counter, defaultdict
+import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -33,7 +34,7 @@ MANUAL_HEADER = ["match_date", "opponent", "minute", "situation", "routine_descr
 
 EGYPT_FM = 10255
 HASSAN = "Hossam Hassan"
-AS_OF = "2026-09-28"
+AS_OF = os.environ.get("PHARAOHS_AS_OF") or date.today().isoformat()
 CATS = ["open_play", "corner", "free_kick", "throw_in", "other_set_piece", "penalty", "own_goal", "unknown"]
 SP_CATS = ["corner", "free_kick", "throw_in", "other_set_piece"]      # set pieces excluding penalties
 FM_SIT = {"RegularPlay": "open_play", "FastBreak": "open_play", "FromCorner": "corner", "FreeKick": "free_kick",

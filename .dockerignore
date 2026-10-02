@@ -1,0 +1,11 @@
+.venv
+.git
+.env
+**/node_modules
+site/dist
+data/cache
+data/private
+data/export
+data/statsbomb
+data/*.db*
+**/__pycache__

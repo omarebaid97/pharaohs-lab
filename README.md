@@ -1,8 +1,7 @@
 # Pharaohs Lab - data foundation (Phase 1)
 
 Public analytics site about the Egypt men's national football team, built only on publicly available data.
-Phase 1 is the local ETL: it builds `data/pharaohs.db` (SQLite) and `data/validation_report.md`.
-No Docker/deploy in this phase.
+The ETL builds `data/pharaohs.db` (SQLite) and `data/validation_report.md`; six analytics modules export JSON; a publish step copies the public subset to `data/public/`; a static site in `site/` reads it.
 
 ## Setup
 
@@ -78,8 +77,12 @@ etl/
   run.py         entrypoint
   validate.py    writes data/validation_report.md
   sources/       wikipedia, fotmob, elo, statsbomb, wikidata
-  models/        empty until Phase 2
-data/            pharaohs.db, cache/, statsbomb/ (all gitignored), validation_report.md
+  models/        coach_hassan, salah_succession, diaspora_scout, opponent_dossiers, set_pieces, load_tracker
+  publish.py     allowlisted copy data/export -> data/public (+ meta.json)
+  scheduler.py   container entrypoint: daily run at 04:00, plus once at startup if needed
+site/            Vite + vanilla JS + Chart.js static site (UI strings in src/i18n/en.json)
+Dockerfile.web, Dockerfile.etl, docker-compose.yml, nginx.conf
+data/            pharaohs.db, cache/, statsbomb/, export/, public/, private/ (all gitignored), manual/ (committed CSVs)
 ```
 
 ## Data notes
@@ -101,3 +104,37 @@ data/            pharaohs.db, cache/, statsbomb/ (all gitignored), validation_re
 - One row per set piece. Columns: `match_date` (YYYY-MM-DD, as in `matches.date`), `opponent`, `minute`, `situation` (corner / free_kick_direct / free_kick_indirect / throw_in / penalty), `routine_description` (short free text: delivery type, target zone, blocker/screen, short-corner pattern, who takes and who attacks the ball), `outcome` (goal / shot / cleared / won_foul / other), `video_or_source_url` (public link with timestamp, e.g. YouTube `?t=` or a match-report URL).
 - Keep the header row unchanged; quote fields containing commas. Cite only public sources; do not paste or upload footage.
 - Re-run the module after editing. Rows are merged verbatim (whitespace trimmed).
+
+## Pipeline
+
+```bash
+.venv/bin/python -m etl.run          # ingest steps, then the six models in dependency order
+.venv/bin/python -m etl.publish      # data/export -> data/public (allowlist) + meta.json
+```
+
+Models run in this order: `coach_hassan`, `diaspora_scout`, `salah_succession`, `opponent_dossiers`, `set_pieces`, `load_tracker` (the diaspora scout runs before the Salah model because the Salah board reads its output). `--only` accepts ingest steps and model names, repeatable; models always run in the order above. A failing model is logged in `ingest_runs` (step `model:<name>`), its previous export is restored, and the other models still run. `PHARAOHS_AS_OF=YYYY-MM-DD` overrides "today" for the models.
+
+Only the files listed in `PUBLIC_FILES` in `etl/publish.py` are published; `data/private/` and `domestic_uncapped.json` never are. Files are written to a temp name and renamed, so readers never see a partial file. `data/public/meta.json` carries the last-updated time, per-module status (`stale` means the last run failed and the previous export is being served) and the source list.
+
+## Development (site)
+
+```bash
+cd site
+npm install
+npm run build                          # -> site/dist
+ln -sfn ../../data/public dist/data    # let the preview serve the published JSON at /data
+npm run preview                        # http://127.0.0.1:4173
+```
+
+`npm run dev` also works if `data/public` is linked at `site/public/data` (do not commit that link). The site is plain DOM: data strings are only ever set as text, and only `http(s)` URLs become links. UI strings live in `site/src/i18n/en.json`.
+
+## Deploy
+
+```bash
+cp .env.example .env      # set TZ (the ETL runs daily at 04:00 in this zone)
+docker compose up -d --build
+```
+
+- `pharaohs-lab-web` serves the built site with nginx and mounts `./data/public` read-only at `/data/`. It publishes no host port; put your reverse proxy in front of port 80 on the compose network.
+- `pharaohs-lab-etl` mounts `./data`, runs `python -m etl.run && python -m etl.publish` daily at 04:00 (container TZ), and once at startup if `data/public/meta.json` is missing. The first full run takes a while because of the polite request rate; later runs mostly hit the cache.
+- The repository must be checked out with `data/manual/` present (it is committed). Everything else under `data/` is generated.

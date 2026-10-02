@@ -16,6 +16,7 @@ import re
 import statistics
 import sys
 from collections import defaultdict
+import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -27,7 +28,7 @@ from ..sources.geo_wikidata import haversine_km
 ROOT = db.ROOT
 EXPORT = ROOT / "data" / "export"
 MANUAL = ROOT / "data" / "manual"
-AS_OF = date(2026, 9, 28)
+AS_OF = date.fromisoformat(os.environ.get("PHARAOHS_AS_OF") or date.today().isoformat())
 CURRENT_FIRST = "2026-09-25"           # first match of the current window
 REFRESH_TTL = 3 * 86400                # refresh FotMob player pages older than 3 days (current-window players only)
 WINDOW_GAP_DAYS = 10                   # matches more than this many days apart start a new window

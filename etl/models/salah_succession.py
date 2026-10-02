@@ -14,6 +14,7 @@ import math
 import random
 import sys
 from collections import defaultdict
+import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -22,7 +23,7 @@ from ..sources import fotmob
 
 ROOT = db.ROOT
 EXPORT = ROOT / "data" / "export"
-AS_OF = date.fromisoformat("2026-09-28")
+AS_OF = date.fromisoformat(os.environ.get("PHARAOHS_AS_OF") or date.today().isoformat())
 SINCE = "2018-01-01"
 MARMOUSH_ERA = "2024-02-06"
 PAGE_TTL = 7 * 86400
@@ -698,7 +699,7 @@ def write_summary(p: dict):
           f"- Exclusions: {c['exclusions']}.",
           f"- Nationality filter: non-Egyptian players excluded (counted only): {c['nationality']['excluded_non_egyptian']} {c['nationality']['excluded_non_egyptian_by_nationality']}; nationality unknown and scored but held in a separate 'nationality_unverified' list: {c['nationality']['unknown_nationality_scored']}. Eligible = FotMob nationality Egypt, OR Egypt-capped in DB, OR listed in diaspora_candidates.json (re-read each run). Percentile pool = Egypt-eligible + unknown players only.",
           f"- Diaspora file present: {c['diaspora_file_present']}; resolution to FotMob ids: {c['diaspora']} (no extra searches were run for unresolved names).",
-          f"- Young attackers with too few trait percentiles to score (listed, not ranked): {c['young_attackers_unscored_insufficient_traits']}.",
+          f"- Young attackers with too few trait percentiles to score (listed, not ranked): {c.get('young_attackers_unscored_insufficient_traits', 'n/a')}.",
           f"- Fields: per-90 goals and assists from the trailing-12-month match list; six FotMob position-group percentiles ({', '.join(TRAIT_KEYS)}). Deep season stats (xG, xA...) exist for only the newest season and only {c['eligible_with_deep_season_stats_600min']} eligible players clear 600 min there, so they are stored but not used.",
           "- No league-strength multiplier applied (label: unadjusted). League level only enters the board rules, as an analyst-judged tier.", "",
           "## Top 15 per role (cosine similarity, percentile-centred)", ""]

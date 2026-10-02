@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import pathlib
 import traceback
 
 from . import db, http
@@ -15,6 +16,9 @@ from .sources import elo, fotmob, statsbomb, wikidata, wikipedia
 
 SINCE = "2018-01-01"
 STEPS = ["wikipedia", "fotmob_egypt", "coaches", "elo", "fotmob_league", "fotmob_players", "statsbomb", "wikidata", "validate"]
+# Analytics models, in dependency order. diaspora_scout runs before salah_succession because
+# the Salah board reads data/export/diaspora_candidates.json (no one-run lag).
+MODELS = ["coach_hassan", "diaspora_scout", "salah_succession", "opponent_dossiers", "set_pieces", "load_tracker"]
 HASSAN_START_FALLBACK = "2024-02-06"
 
 
@@ -234,16 +238,47 @@ FUNCS = {"wikipedia": step_wikipedia, "fotmob_egypt": step_fotmob_egypt, "coache
          "wikidata": step_wikidata, "validate": step_validate}
 
 
+def run_model(con, name):
+    """Run one model. Its export files are snapshotted first and restored on failure, so a broken
+    model never leaves a half-written export and the previous good one stays in place."""
+    import importlib
+    import shutil
+    import tempfile
+    export = db.ROOT / "data" / "export"
+    export.mkdir(parents=True, exist_ok=True)
+    snap = pathlib.Path(tempfile.mkdtemp(prefix=f"snap_{name}_"))
+    before = {p.name: p.stat().st_mtime_ns for p in export.iterdir() if p.is_file()}
+    for p in export.iterdir():
+        if p.is_file():
+            shutil.copy2(p, snap / p.name)
+    try:
+        with db.Run(con, f"model:{name}") as run:
+            mod = importlib.import_module(f"etl.models.{name}")
+            mod.run(con)
+            con.commit()
+    except Exception as e:
+        log(f"  FAILED: {type(e).__name__}: {e}")
+        traceback.print_exc()
+        for p in export.iterdir():   # drop anything new/partial, restore what existed
+            if p.is_file() and p.name not in before:
+                p.unlink()
+        for p in snap.iterdir():
+            shutil.copy2(p, export / p.name)
+        log(f"  previous export for {name} kept")
+    finally:
+        shutil.rmtree(snap, ignore_errors=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", choices=STEPS, action="append", help="run only this step (repeatable)")
+    ap.add_argument("--only", choices=STEPS + MODELS, action="append", help="run only this ingest step or model (repeatable)")
     ap.add_argument("--limit", type=int, default=0, help="cap items per step (smoke test)")
     args = ap.parse_args()
     con = db.connect()
     db.init(con)
     before = db.counts(con)
-    steps = args.only or STEPS
-    for step in [x for x in steps if x != "validate"]:
+    steps = args.only or (STEPS + MODELS)
+    for step in [x for x in STEPS if x in steps and x != "validate"]:
         log(f"== {step}")
         try:
             with db.Run(con, step) as run:
@@ -270,6 +305,9 @@ def main():
         except Exception as e:
             log(f"  FAILED: {type(e).__name__}: {e}")
             traceback.print_exc()
+    for name in [m for m in MODELS if m in steps]:   # always MODELS order, whatever the --only order
+        log(f"== model:{name}")
+        run_model(con, name)
 
 
 if __name__ == "__main__":

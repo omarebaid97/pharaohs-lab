@@ -1,0 +1,22 @@
+name: pharaohs-lab
+
+services:
+  pharaohs-lab-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: pharaohs-lab-web
+    restart: unless-stopped
+    volumes:
+      - ./data/public:/usr/share/nginx/html/data:ro
+
+  etl:
+    build:
+      context: .
+      dockerfile: Dockerfile.etl
+    container_name: pharaohs-lab-etl
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./data:/app/data
